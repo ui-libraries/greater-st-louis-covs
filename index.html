@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Greater St. Louis Racial Restrictions</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- maplibre-gl.css here -->
+  <link href='https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css' rel='stylesheet' />
+  <!-- jQuery message box css -->
+  <link href='https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.2/dist/messagebox.min.css' rel='stylesheet' />
+  <!-- Rubik font -->
+  <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+
+  <!-- basic css to style the viewer goes below -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-family: 'Rubik', sans-serif;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      font-weight: normal;
+    }
+
+    .container {
+      display: table;
+      width: 100%;
+      margin: 0;
+    }
+    h2 {
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Rubik', sans-serif;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      font-weight: normal;
+      width: 50%;
+      text-align: left;
+      display: table-cell;
+    }
+    #infobutton {
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 3px;
+      font: 12px 'Rubik', sans-serif;
+      padding-top: 0px;
+      padding-bottom: 1px;
+      text-align: right;
+      display: table-cell;
+    }
+
+    span {
+      font-size: 13px;
+      font-family: 'Rubik', sans-serif;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      font-weight: bold;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    #slider {
+      cursor: pointer;
+      width: 275px;
+    }
+
+    #legend {
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 3px;
+      bottom: 30px;
+      width: 260px;
+      box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+      font: 12px/20px 'Rubik', 'Rubik', 'Rubik', sans-serif;
+      padding: 10px;
+      position: absolute;
+      right: 10px;
+      z-index: 1;
+      line-height: 18px;
+      color: black;
+    }
+
+    .session {
+      position: absolute;
+      z-index: 1;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+      top: 10px;
+      left: 10px;
+      padding: 5px;
+    }
+
+    .map-overlay i {
+      width: 10px;
+      height: 10px;
+      float: left;
+      margin-right: 5px;
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+
+    /* adjust the width of the popup to the width of the text */
+    .mapboxgl-popup-content {
+      width: max-content;
+    }
+
+    /* for the layer control */
+    .map-overlay-2 {
+      font: 12px/20px 'Rubik', Arial, Helvetica, sans-serif;
+      position: absolute;
+      width: 200px;
+      bottom: 20px;
+      left: 0px;
+      padding: 10px;
+    }
+
+    .map-overlay-2 .map-overlay-inner {
+      background-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .map-overlay-inner fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 10px;
+    }
+
+    .map-overlay-inner .categoryLabel {
+      display: block;
+      font-weight: bold;
+      margin: 0 0 5px;
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    /* for portable devices */
+    @media only screen and (max-width:950px) {
+      h1 {
+        font-size: 0.8em;
+        font-family: 'Rubik', sans-serif;
+        padding-bottom: 0px;
+        padding-top: 0px;
+        font-weight: normal;
+      }
+      .container {
+        display: table;
+        width: 100%;
+        margin: 0;
+      }
+      h2 {
+        font-size: 0.7em;
+        font-family: 'Rubik', sans-serif;
+        padding-bottom: 0px;
+        padding-top: 0px;
+        font-weight: normal;
+        width: 50%;
+        text-align: left;
+        display: table-cell;
+      }
+      #infobutton {
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 3px;
+        font: 0.65em 'Rubik', sans-serif;
+        padding-top: 0px;
+        padding-bottom: 1px;
+        text-align: right;
+        display: table-cell;
+      }
+      #slider {
+        cursor: pointer;
+        width: 16.5em;
+      }
+      #legend {
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 3px;
+        bottom: 30px;
+        width: 18em;
+        box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
+        font: 0.6em/1.1em 'Rubik', 'Rubik', 'Rubik', sans-serif;
+        padding: 10px;
+        position: absolute;
+        right: 10px;
+        z-index: 1;
+        line-height: 18px;
+        color: black;
+      }
+      #legend span {
+        font-size: 0.9em;
+      }
+      /* for the layer control */
+      .map-overlay-2 {
+        font: 0.6em/1.1em 'Rubik', Arial, Helvetica, sans-serif;
+        position: absolute;
+        width: 150px;
+        bottom: 0px;
+        left: 10px;
+        padding: 0px;
+      }
+      .map-overlay-inner fieldset {
+        border: none;
+        padding: 0;
+        margin: 0 0 0 0px;
+      }
+      .map-overlay-inner .categoryLabel {
+        display: block;
+        font: 0.9em/1.4em 'Rubik', Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        margin: 0 0 5px;
+      }
+      input[type="checkbox"] {
+        cursor: pointer;
+      }
+      /* hide the scale bar */
+      .maplibregl-ctrl-scale {
+        visibility: hidden;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- id the map div -->
+  <div id='map'></div>
+
+  <!-- time slider -->
+  <div class='session' id='sliderbar'>
+    <h1>Racial Restrictions in<br>Greater St. Louis, 1870 - 1952</h1>
+    <div class='container'>
+      <h2>Year: <label id='active-year'>1952</label></h2>
+      <button id='infobutton' onclick="buttonFunction()">About the Map</button><br>
+    </div>
+    <input id='slider' class='row' type='range' min='1890' max='1952' step='1' value='1952' />
+  </div>
+
+  <!-- choropleth legend -->
+  <div class='map-overlay' id='legend'></div>
+
+  <!-- layer control -->
+  <div class='map-overlay-2 top'>
+    <div class='map-overlay-inner'>
+      <fieldset>
+        <label class="categoryLabel">Type of Restriction</label>
+        <div>
+          <input type="checkbox" id="parAllCB" value="parAll" onchange="grouplayer('parAll')" autocomplete="off" checked/>
+          <label for="parAllCB">Parcel</label>
+        </div>
+        <div>
+          <input type="checkbox" id="petAllCB" value="petAll" onchange="grouplayer('petAll')" autocomplete="off" checked/>
+          <label for="petAllCB">Petition</label>
+        </div>
+        <div>
+          <input type="checkbox" id="privAllCB" value="privAll" onchange="grouplayer('privAll')" autocomplete="off" checked/>
+          <label for="privAllCB">Private Street</label>
+        </div>
+        <div>
+          <input type="checkbox" id="privRAllCB" value="privRAll" onchange="grouplayer('privRAll')" autocomplete="off" checked/>
+          <label for="privRAllCB">Private Street With Racial Restriction</label>
+        </div>
+        <div>
+          <input type="checkbox" id="subAllCB" value="subAll" onchange="grouplayer('subAll')" autocomplete="off" checked/>
+          <label for="restAllCB">Subdivision</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <label class="categoryLabel">Census Demographics<br>(1900 - 1950)</label>
+          <div>
+            <input type="checkbox" id="pbAllCB" value="pbAll" onchange="switchlayer('pbAll')" autocomplete="off"/>
+            <label for="pbAllCB">Share Black</label>
+          </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <!-- maplibre-gl.js library -->
+  <script src='https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js'></script>
+
+  <!-- jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- jQuery message box js -->
+  <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-message-box@3.2.2/dist/messagebox.min.js"></script>
+
+  <!-- d3 js -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+
+  <script>
+
+    // define the initial slider-selected year
+    const initYear = parseInt(document.getElementById('slider').value);
+
+    // update text in the UI
+    document.getElementById('active-year').innerText = initYear;
+
+    const style = {"version":8,"name":"Positron","metadata":{"mapbox:autocomposite":false,"mapbox:groups":{"101da9f13b64a08fa4b6ac1168e89e5f":{"collapsed":false,"name":"Places"},"a14c9607bc7954ba1df7205bf660433f":{"name":"Boundaries"},"b6371a3f2f5a9932464fa3867530a2e5":{"collapsed":false,"name":"Transportation"}},"mapbox:type":"template","openmaptiles:mapbox:owner":"openmaptiles","openmaptiles:mapbox:source:url":"mapbox://openmaptiles.4qljc88t","openmaptiles:version":"3.x"},"sources":{"openmaptiles":{"type":"vector","url":"https://api.maptiler.com/tiles/v3/tiles.json?key=jBr5GHkTieg6Bk4Efz6g"},"composite": {"type": "vector","tiles":[location.origin+location.pathname+"stl_tiles/{z}/{x}/{y}.pbf"]}},"sprite":"https://api.maptiler.com/maps/positron/sprite","glyphs":"https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=jBr5GHkTieg6Bk4Efz6g","layers": [{"id":"background","type":"background","paint":{"background-color":"rgb(242,243,240)"}},{"id":"park","type":"fill","source":"openmaptiles","source-layer":"park","filter":["==","$type","Polygon"],"layout":{"visibility":"visible"},"paint":{"fill-color":"rgb(230, 233, 229)"}},{"id":"water","type":"fill","source":"openmaptiles","source-layer":"water","filter":["all",["==","$type","Polygon"],["!=","brunnel","tunnel"]],"layout":{"visibility":"visible"},"paint":{"fill-antialias":true,"fill-color":"rgb(194, 200, 202)"}},{"id":"landcover_ice_shelf","type":"fill","source":"openmaptiles","source-layer":"landcover","maxzoom":8,"filter":["all",["==","$type","Polygon"],["==","subclass","ice_shelf"]],"layout":{"visibility":"visible"},"paint":{"fill-color":"hsl(0, 0%, 98%)","fill-opacity":0.7}},{"id":"landcover_glacier","type":"fill","source":"openmaptiles","source-layer":"landcover","maxzoom":8,"filter":["all",["==","$type","Polygon"],["==","subclass","glacier"]],"layout":{"visibility":"visible"},"paint":{"fill-color":"hsl(0, 0%, 98%)","fill-opacity":{"base":1,"stops":[[0,1],[8,0.5]]}}},{"id":"landuse_residential","type":"fill","source":"openmaptiles","source-layer":"landuse","maxzoom":16,"filter":["all",["==","$type","Polygon"],["==","class","residential"]],"layout":{"visibility":"visible"},"paint":{"fill-color":"rgb(234, 234, 230)","fill-opacity":{"base":0.6,"stops":[[8,0.8],[9,0.6]]}}},{"id":"landcover_wood","type":"fill","source":"openmaptiles","source-layer":"landcover","minzoom":10,"filter":["all",["==","$type","Polygon"],["==","class","wood"]],"layout":{"visibility":"visible"},"paint":{"fill-color":"rgb(220,224,220)","fill-opacity":{"base":1,"stops":[[8,0],[12,1]]}}},{"id":"waterway","type":"line","source":"openmaptiles","source-layer":"waterway","filter":["==","$type","LineString"],"layout":{"visibility":"visible"},"paint":{"line-color":"hsl(195, 17%, 78%)"}},{"id":"water_name","type":"symbol","source":"openmaptiles","source-layer":"water_name","filter":["==","$type","LineString"],"layout":{"symbol-placement":"line","symbol-spacing":500,"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Medium Italic","Noto Sans Italic"],"text-rotation-alignment":"map","text-size":12},"paint":{"text-color":"rgb(157,169,177)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"building","type":"fill","source":"openmaptiles","source-layer":"building","minzoom":12,"paint":{"fill-antialias":true,"fill-color":"rgb(234, 234, 229)","fill-outline-color":"rgb(219, 219, 218)"}},{"id":"tunnel_motorway_casing","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["==","brunnel","tunnel"],["==","class","motorway"]]],"layout":{"line-cap":"butt","line-join":"miter","visibility":"visible"},"paint":{"line-color":"rgb(213, 213, 213)","line-opacity":1,"line-width":{"base":1.4,"stops":[[5.8,0],[6,3],[20,40]]}}},{"id":"tunnel_motorway_inner","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["==","brunnel","tunnel"],["==","class","motorway"]]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"rgb(234,234,234)","line-width":{"base":1.4,"stops":[[4,2],[6,1.3],[20,30]]}}},{"id":"aeroway-taxiway","type":"line","metadata":{"mapbox:group":"1444849345966.4436"},"source":"openmaptiles","source-layer":"aeroway","minzoom":12,"filter":["all",["in","class","taxiway"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"hsl(0, 0%, 88%)","line-opacity":1,"line-width":{"base":1.55,"stops":[[13,1.8],[20,20]]}}},{"id":"aeroway-runway-casing","type":"line","metadata":{"mapbox:group":"1444849345966.4436"},"source":"openmaptiles","source-layer":"aeroway","minzoom":11,"filter":["all",["in","class","runway"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"hsl(0, 0%, 88%)","line-opacity":1,"line-width":{"base":1.5,"stops":[[11,6],[17,55]]}}},{"id":"aeroway-area","type":"fill","metadata":{"mapbox:group":"1444849345966.4436"},"source":"openmaptiles","source-layer":"aeroway","minzoom":4,"filter":["all",["==","$type","Polygon"],["in","class","runway","taxiway"]],"layout":{"visibility":"visible"},"paint":{"fill-color":"rgba(255, 255, 255, 1)","fill-opacity":{"base":1,"stops":[[13,0],[14,1]]}}},{"id":"aeroway-runway","type":"line","metadata":{"mapbox:group":"1444849345966.4436"},"source":"openmaptiles","source-layer":"aeroway","minzoom":11,"filter":["all",["in","class","runway"],["==","$type","LineString"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"rgba(255, 255, 255, 1)","line-opacity":1,"line-width":{"base":1.5,"stops":[[11,4],[17,50]]}}},{"id":"road_area_pier","type":"fill","metadata":{},"source":"openmaptiles","source-layer":"transportation","filter":["all",["==","$type","Polygon"],["==","class","pier"]],"layout":{"visibility":"visible"},"paint":{"fill-antialias":true,"fill-color":"rgb(242,243,240)"}},{"id":"road_pier","type":"line","metadata":{},"source":"openmaptiles","source-layer":"transportation","filter":["all",["==","$type","LineString"],["in","class","pier"]],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-color":"rgb(242,243,240)","line-width":{"base":1.2,"stops":[[15,1],[17,4]]}}},{"id":"highway_path","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","filter":["all",["==","$type","LineString"],["==","class","path"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"rgb(234, 234, 234)","line-opacity":0.9,"line-width":{"base":1.2,"stops":[[13,1],[20,10]]}}},{"id":"highway_minor","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":8,"filter":["all",["==","$type","LineString"],["in","class","minor","service","track"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"hsl(0, 0%, 88%)","line-opacity":0.9,"line-width":{"base":1.55,"stops":[[13,1.8],[20,20]]}}},{"id":"highway_major_casing","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":11,"filter":["all",["==","$type","LineString"],["in","class","primary","secondary","tertiary","trunk"]],"layout":{"line-cap":"butt","line-join":"miter","visibility":"visible"},"paint":{"line-color":"rgb(213, 213, 213)","line-dasharray":[12,0],"line-width":{"base":1.3,"stops":[[10,3],[20,23]]}}},{"id":"highway_major_inner","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":11,"filter":["all",["==","$type","LineString"],["in","class","primary","secondary","tertiary","trunk"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"#fff","line-width":{"base":1.3,"stops":[[10,2],[20,20]]}}},{"id":"highway_major_subtle","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","maxzoom":11,"filter":["all",["==","$type","LineString"],["in","class","primary","secondary","tertiary","trunk"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"hsla(0, 0%, 85%, 0.69)","line-width":2}},{"id":"highway_motorway_casing","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["!in","brunnel","bridge","tunnel"],["==","class","motorway"]]],"layout":{"line-cap":"butt","line-join":"miter","visibility":"visible"},"paint":{"line-color":"rgb(213, 213, 213)","line-dasharray":[2,0],"line-opacity":1,"line-width":{"base":1.4,"stops":[[5.8,0],[6,3],[20,40]]}}},{"id":"highway_motorway_inner","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["!in","brunnel","bridge","tunnel"],["==","class","motorway"]]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":{"base":1,"stops":[[5.8,"hsla(0, 0%, 85%, 0.53)"],[6,"#fff"]]},"line-width":{"base":1.4,"stops":[[4,2],[6,1.3],[20,30]]}}},{"id":"highway_motorway_subtle","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","maxzoom":6,"filter":["all",["==","$type","LineString"],["==","class","motorway"]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":"hsla(0, 0%, 85%, 0.53)","line-width":{"base":1.4,"stops":[[4,2],[6,1.3]]}}},{"id":"railway_transit","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":16,"filter":["all",["==","$type","LineString"],["all",["==","class","transit"],["!in","brunnel","tunnel"]]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#dddddd","line-width":3}},{"id":"railway_transit_dashline","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":16,"filter":["all",["==","$type","LineString"],["all",["==","class","transit"],["!in","brunnel","tunnel"]]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#fafafa","line-dasharray":[3,3],"line-width":2}},{"id":"railway_service","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":16,"filter":["all",["==","$type","LineString"],["all",["==","class","rail"],["has","service"]]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#dddddd","line-width":3}},{"id":"railway_service_dashline","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":16,"filter":["all",["==","$type","LineString"],["==","class","rail"],["has","service"]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#fafafa","line-dasharray":[3,3],"line-width":2}},{"id":"railway","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":13,"filter":["all",["==","$type","LineString"],["all",["!has","service"],["==","class","rail"]]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#dddddd","line-width":{"base":1.3,"stops":[[16,3],[20,7]]}}},{"id":"railway_dashline","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":13,"filter":["all",["==","$type","LineString"],["all",["!has","service"],["==","class","rail"]]],"layout":{"line-join":"round","visibility":"visible"},"paint":{"line-color":"#fafafa","line-dasharray":[3,3],"line-width":{"base":1.3,"stops":[[16,2],[20,6]]}}},{"id":"highway_motorway_bridge_casing","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["==","brunnel","bridge"],["==","class","motorway"]]],"layout":{"line-cap":"butt","line-join":"miter","visibility":"visible"},"paint":{"line-color":"rgb(213, 213, 213)","line-dasharray":[2,0],"line-opacity":1,"line-width":{"base":1.4,"stops":[[5.8,0],[6,5],[20,45]]}}},{"id":"highway_motorway_bridge_inner","type":"line","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation","minzoom":6,"filter":["all",["==","$type","LineString"],["all",["==","brunnel","bridge"],["==","class","motorway"]]],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-color":{"base":1,"stops":[[5.8,"hsla(0, 0%, 85%, 0.53)"],[6,"#fff"]]},"line-width":{"base":1.4,"stops":[[4,2],[6,1.3],[20,30]]}}},{"id":"highway_name_other","type":"symbol","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation_name","filter":["all",["!=","class","motorway"],["==","$type","LineString"]],"layout":{"symbol-placement":"line","symbol-spacing":350,"text-field":"{name:latin} {name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-max-angle":30,"text-pitch-alignment":"viewport","text-rotation-alignment":"map","text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":"#bbb","text-halo-blur":1,"text-halo-color":"#fff","text-halo-width":2,"text-translate":[0,0]}},{"id":"highway_name_motorway","type":"symbol","metadata":{"mapbox:group":"b6371a3f2f5a9932464fa3867530a2e5"},"source":"openmaptiles","source-layer":"transportation_name","filter":["all",["==","$type","LineString"],["==","class","motorway"]],"layout":{"symbol-placement":"line","symbol-spacing":350,"text-field":"{ref}","text-font":["Metropolis Light","Noto Sans Regular"],"text-pitch-alignment":"viewport","text-rotation-alignment":"viewport","text-size":10,"visibility":"visible"},"paint":{"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"hsl(0, 0%, 100%)","text-halo-width":1,"text-translate":[0,2]}},{"id":"boundary_state","type":"line","metadata":{"mapbox:group":"a14c9607bc7954ba1df7205bf660433f"},"source":"openmaptiles","source-layer":"boundary","filter":["==","admin_level",4],"layout":{"line-cap":"round","line-join":"round","visibility":"visible"},"paint":{"line-blur":0.4,"line-color":"rgb(230, 204, 207)","line-dasharray":[2,2],"line-opacity":1,"line-width":{"base":1.3,"stops":[[3,1],[22,15]]}}},{"id":"boundary_country_z0-4","type":"line","metadata":{"mapbox:group":"a14c9607bc7954ba1df7205bf660433f"},"source":"openmaptiles","source-layer":"boundary","maxzoom":5,"filter":["all",["==","admin_level",2],["!has","claimed_by"]],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-blur":{"base":1,"stops":[[0,0.4],[22,4]]},"line-color":"rgb(230, 204, 207)","line-opacity":1,"line-width":{"base":1.1,"stops":[[3,1],[22,20]]}}},{"id":"boundary_country_z5-","type":"line","metadata":{"mapbox:group":"a14c9607bc7954ba1df7205bf660433f"},"source":"openmaptiles","source-layer":"boundary","minzoom":5,"filter":["==","admin_level",2],"layout":{"line-cap":"round","line-join":"round"},"paint":{"line-blur":{"base":1,"stops":[[0,0.4],[22,4]]},"line-color":"rgb(230, 204, 207)","line-opacity":1,"line-width":{"base":1.1,"stops":[[3,1],[22,20]]}}},{"id":"place_other","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":14,"filter":["all",["in","class","continent","hamlet","neighbourhood","isolated_dwelling"],["==","$type","Point"]],"layout":{"text-anchor":"center","text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"center","text-offset":[0.5,0],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_suburb","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":15,"filter":["all",["==","$type","Point"],["==","class","suburb"]],"layout":{"text-anchor":"center","text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"center","text-offset":[0.5,0],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_village","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":14,"filter":["all",["==","$type","Point"],["==","class","village"]],"layout":{"icon-size":0.4,"text-anchor":"left","text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"left","text-offset":[0.5,0.2],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"icon-opacity":0.7,"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_town","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":15,"filter":["all",["==","$type","Point"],["==","class","town"]],"layout":{"icon-image":{"base":1,"stops":[[0,"circle-11"],[8,""]]},"icon-size":0.4,"text-anchor":{"base":1,"stops":[[0,"left"],[8,"center"]]},"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"left","text-offset":[0.5,0.2],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"icon-opacity":0.7,"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_city","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":14,"filter":["all",["==","$type","Point"],["all",["!=","capital",2],["==","class","city"],[">","rank",3]]],"layout":{"icon-image":{"base":1,"stops":[[0,"circle-11"],[8,""]]},"icon-size":0.4,"text-anchor":{"base":1,"stops":[[0,"left"],[8,"center"]]},"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"left","text-offset":[0.5,0.2],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"icon-opacity":0.7,"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_capital","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":12,"filter":["all",["==","$type","Point"],["all",["==","capital",2],["==","class","city"]]],"layout":{"icon-image":{"base":1,"stops":[[0,"star-11"],[8,""]]},"icon-size":1,"text-anchor":{"base":1,"stops":[[0,"left"],[8,"center"]]},"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"left","text-offset":[0.5,0.2],"text-size":14,"text-transform":"uppercase","visibility":"visible"},"paint":{"icon-opacity":0.7,"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_city_large","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":12,"filter":["all",["==","$type","Point"],["all",["!=","capital",2],["<=","rank",3],["==","class","city"]]],"layout":{"icon-image":{"base":1,"stops":[[0,"circle-11"],[8,""]]},"icon-size":0.4,"text-anchor":{"base":1,"stops":[[0,"left"],[8,"center"]]},"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-justify":"left","text-offset":[0.5,0.2],"text-size":14,"text-transform":"uppercase","visibility":"visible"},"paint":{"icon-opacity":0.7,"text-color":"rgb(117, 129, 145)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_state","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":12,"filter":["all",["==","$type","Point"],["==","class","state"]],"layout":{"text-field":"{name:latin}\n{name:nonlatin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-size":10,"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":"rgb(113, 129, 144)","text-halo-blur":1,"text-halo-color":"rgb(242,243,240)","text-halo-width":1}},{"id":"place_country_other","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":8,"filter":["all",["==","$type","Point"],["==","class","country"],["!has","iso_a2"]],"layout":{"text-field":"{name:latin}","text-font":["Metropolis Light Italic","Noto Sans Italic"],"text-size":{"base":1,"stops":[[0,9],[6,11]]},"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":{"base":1,"stops":[[3,"rgb(157,169,177)"],[4,"rgb(153, 153, 153)"]]},"text-halo-color":"rgba(236,236,234,0.7)","text-halo-width":1.4}},{"id":"place_country_minor","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":8,"filter":["all",["==","$type","Point"],["==","class","country"],[">=","rank",2],["has","iso_a2"]],"layout":{"text-field":"{name:latin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-size":{"base":1,"stops":[[0,10],[6,12]]},"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":{"base":1,"stops":[[3,"rgb(157,169,177)"],[4,"rgb(153, 153, 153)"]]},"text-halo-color":"rgba(236,236,234,0.7)","text-halo-width":1.4}},{"id":"place_country_major","type":"symbol","metadata":{"mapbox:group":"101da9f13b64a08fa4b6ac1168e89e5f"},"source":"openmaptiles","source-layer":"place","maxzoom":6,"filter":["all",["==","$type","Point"],["<=","rank",1],["==","class","country"],["has","iso_a2"]],"layout":{"text-anchor":"center","text-field":"{name:latin}","text-font":["Metropolis Regular","Noto Sans Regular"],"text-size":{"base":1.4,"stops":[[0,10],[3,12],[4,14]]},"text-transform":"uppercase","visibility":"visible"},"paint":{"text-color":{"base":1,"stops":[[3,"rgb(157,169,177)"],[4,"rgb(153, 153, 153)"]]},"text-halo-color":"rgba(236,236,234,0.7)","text-halo-width":1.4}},{"id":"stl_county_sub","type":"fill","source":"composite","source-layer":"stl_county_sub","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','orange'],"fill-opacity":0.5,"fill-outline-color":'orange'},"filter":['<=',['number',['get','RC_YR']],initYear]},{"id":"stl_city_pet","type":"fill","source":"composite","source-layer":"stl_city_pet","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','red'],"fill-opacity":0.5,"fill-outline-color":'red'},"filter":['<=',['number',['get','year']],initYear]},{"id":"stl_city_sub","type":"fill","source":"composite","source-layer":"stl_city_sub","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','orange'],"fill-opacity":0.5,"fill-outline-color":'orange'},"filter":['<=',['number',['get','year']],initYear]},{"id":"stl_city_par","type":"fill","source":"composite","source-layer":"stl_city_par","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','blue'],"fill-opacity":0.5,"fill-outline-color":'blue'},"filter":['<=',['number',['get','year']],initYear]},{"id":"stl_city_priv","type":"fill","source":"composite","source-layer":"stl_city_priv","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','#54cc20'],"fill-opacity":0.5,"fill-outline-color":'#54cc20'},"filter":['<=',['number',['get','year']],initYear]},{"id":"stl_county_pet","type":"fill","source":"composite","source-layer":"stl_county_pet","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','red'],"fill-opacity":0.5,"fill-outline-color":'red'},"filter":['<=',['number',['get','RC_YR']],initYear]},{"id":"stl_city_privR","type":"fill","source":"composite","source-layer":"stl_city_privR","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','#2d6e11'],"fill-opacity":0.5,"fill-outline-color":'#2d6e11'},"filter":['<=',['number',['get','year']],initYear]},{"id":"stl_county_par","type":"fill","source":"composite","source-layer":"stl_county_par","layout":{'visibility':'visible'},'minzoom':0,'maxzoom':16,"paint":{"fill-color":['case',['boolean',['feature-state','hover'],false],'yellow','blue'],"fill-opacity":0.5,"fill-outline-color":'blue'},"filter":['<=',['number',['get','RC_YR']],initYear]}],"id":"positron"};
+
+    // define the map
+    const map = new maplibregl.Map({
+      container: 'map',
+      bounds: [[-90.535404,38.499388],[-90.080454,38.799179]], // the coordinate boundaries of St. Louis County
+      maxZoom: 16,
+      style: style
+    });
+
+    // add zoom and rotation controls to the map.
+    map.addControl(new maplibregl.NavigationControl());
+
+    // add full screen control
+    map.addControl(new maplibregl.FullscreenControl());
+
+    // add a scale bar
+    map.addControl(new maplibregl.ScaleControl({
+      position: 'bottom-left',
+      unit: 'imperial'
+    }));
+
+    // create legend
+    function getColorPOC(d) {
+    return d >= 0.90 ? '#050505' :
+      d >= 0.75 ? '#363636' :
+      d >= 0.50 ? '#676767' :
+      d >= 0.25 ? '#989898' :
+      d >= 0.10 ? '#c9c9c9' :
+      d > 0.00 ? '#fafafa' :
+      'rgba(0,0,0,0.0)';
+    };
+
+    function getColorRestrictive(d) {
+      return d === 'par' ? 'blue' :
+        d === 'pet' ? 'red' :
+        d === 'priv' ? '#54cc20':
+        d === 'privR' ? '#2d6e11':
+        d === 'sub' ? 'orange' :
+        d === null ? '#ff9966':
+        'rgba(0,0,0,0.0)';
+    };
+
+    const legend = document.getElementById('legend');
+    const item = document.createElement('div');
+    item.innerHTML +=
+        "<div class='column1' style='width: 50%; float: left;'>" +
+          "<span>Restriction Type</span>" +
+          '<br>' + '<i style="background:' + getColorRestrictive('par') + '"></i> ' + 'Parcel' +
+          '<br>' + '<i style="background:' + getColorRestrictive('pet') + '"></i> ' + 'Petition' +
+          '<br>' + '<i style="background:' + getColorRestrictive('priv') + '"></i> ' + 'Private Street' +
+          '<br>' + '<i style="background:' + getColorRestrictive('privR') + '"></i> ' + 'Private Street With Racial Restriction' +
+          '<br>' + '<i style="background:' + getColorRestrictive('sub') + '"></i> ' + 'Subdivision' +
+        "</div>" +
+        "<div class='column2' style='margin-left: 55%;'>" +
+          "<span>Share Black</span>" +
+          '<br>' + '<i style="background:' + getColorPOC(0.91) + '"></i> ' + '>90%' +
+          '<br>' + '<i style="background:' + getColorPOC(0.76) + '"></i> ' + '75% - 89%' +
+          '<br>' + '<i style="background:' + getColorPOC(0.51) + '"></i> ' + '50% - 74%' +
+          '<br>' + '<i style="background:' + getColorPOC(0.26) + '"></i> ' + '25% - 49%' +
+          '<br>' + '<i style="background:' + getColorPOC(0.11) + '"></i> ' + '10% - 24%' +
+          '<br>' + '<i style="background:' + getColorPOC(0.01) + '"></i> ' + '>0% - 9%' +
+        "</div>";
+
+    legend.appendChild(item);
+
+    // create a popup without adding to map
+    let popup = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    // create hover effects
+    //let hoverID = null;
+    let hoveredStateId = null;
+
+    function buttonFunction() {
+      // Information about this map
+      $.MessageBox({
+          buttonDone  : "Okay",
+          message     : "<b>About the map:</b><br><br>Racial restrictions were collected from the St. Louis City and St. Louis County Recorders’ Offices. For the City, we worked from a detailed register of St. Louis restrictions, recorded over the last century by one of the City’s major title and abstract firms. For the County, we worked from the Recorder’s master list of subdivisions and the “Restrictions” card file (organized by subdivision). These indices provided “book and page” deed book references. From here, we identified racial restrictions and catalogued their key elements--including the date, the type of agreement, the expiration term and date, the language of the racial restriction, the presence of other restrictions, and (when relevant) the number of signatories to the agreement. For the County, we also examined the original plat book volumes through 1955 (restrictions were often recorded directly on the plat, or the plat often contained reference to the book and page where the restriction was filed). Not including duplicate or renewed agreements, we found 763 unique restrictive covenants or agreements (totaling 29.947 residential parcels) in the City of St. Louis and 1041 unique restrictive covenants or agreements (totally 75,539 parcels) in St. Louis County. We matched the spatial information in each record (using subdivision names, legal descriptions, and city blocks) to the current City of St. Louis and St. Louis County parcel data and mapped each restricted parcel by date and type of restriction. In a few cases, subdivisions platted and recorded in St. Louis County included parcels in the City. Where original residential parcels were displaced by redevelopment or highway construction, we estimated and restored their footprint.<br><br>The data was collected and coded by Colin Gordon in 2019-21, with assistance from staff and interns with the Metro St. Louis Equal Housing and Opportunity Council, Legal Services of Eastern Missouri, and Harvard's Commonwealth Project. In kind and financial support was provided by the St. Louis County Recorder, the City of St. Louis Recorder, and St. Louis REALTORS. The local demographics (black share of population) for 1900-1940 are mapped using census enumeration district data set developed by Alison Shertzer and colleagues. See Alison Shertzer, Randall Walsh, and John Logan. 2016. “Segregation and Neighborhood Change in Northern Cities: New Historical GIS Data from 1900–1930,” Historical Methods 49:4. The interactive map was designed by Jay Bowen of the University of Iowa Digital Scholarship and Publishing Studio. It was written primarily in MapLibre GL JS, an open source version of Mapbox GL JS, and uses vector tiles derived from geojson files to present the parcel data. By shedding unseen data and simplifying polygons at smaller map scales, vector tiles allowed for larger geojson data sources to be used without crashing the map."
+      });
+    }
+
+    // when the map loads, call a function
+    map.on('load', () => {
+
+      // collect layer ids in arrays here so that you only need to
+      // run the following once for each collection
+      const countyLayerIds = ['stl_county_sub','stl_county_pet','stl_county_par'];
+      const cityLayerIds = ['stl_city_sub','stl_city_pet','stl_city_par','stl_city_priv','stl_city_privR'];
+
+      // for each layer of the countyLayerIds...
+      for (const a of countyLayerIds) {
+
+        // when you move your mouse over it, do something...
+        // the formula for this is 'map.on({event}, {layer id}, function(x){})'
+        map.on('mousemove', a, (e) => {
+
+          // change the cursor style as a UI indicator.
+          map.getCanvas().style.cursor = 'pointer';
+
+          // initiate the hover state
+          if (e.features.length > 0) {
+            if (hoveredStateId !== null) {
+              map.setFeatureState(
+                {source: "composite", sourceLayer: a, id: hoveredStateId},
+                {hover:false}
+              );
+            }
+            hoveredStateId = e.features[0].id;
+            map.setFeatureState(
+              {source: "composite", sourceLayer: a, id: hoveredStateId},
+              {hover:true}
+            );
+          };
+
+          // define the layer properties
+          // with "e.features[0].properties," you have access to all of the properties from the initial geojson layer
+          let props = e.features[0].properties;
+
+          // get the popup defined above
+          popup
+            .setLngLat(e.lngLat) // the location of the cursor
+            .setHTML('<b>' + props.PROP_ADD + '</b><br>Original Subdivision: ' + props.SUB_HIST +
+              '<br>Municipality (2022): ' + props.MUNICIPALI + '<br>Record Number: ' + props.DOC +
+              '<br>Year Restricted: ' + props.RC_YR) // feed the popup the prop info
+            .addTo(map) // add the popup to the map
+
+        });
+
+        // when you mouse off the layer...
+        map.on('mouseleave', a, () => {
+          // change the cursor style back to initial setting
+          map.getCanvas().style.cursor = '';
+          if (hoveredStateId !== null) {
+            map.setFeatureState(
+              { source: "composite", sourceLayer: a, id: hoveredStateId },
+              { hover: false }
+            );
+          }
+          hoveredStateId = null;
+
+          // and remove the popup
+          popup.remove();
+        });
+
+      };
+
+      for (const a of cityLayerIds) {
+
+        // when you move your mouse over it, do something...
+        // the formula for this is 'map.on({event}, {layer id}, function(x){})'
+        map.on('mousemove', a, (e) => {
+
+          // change the cursor style as a UI indicator.
+          map.getCanvas().style.cursor = 'pointer';
+
+          // initiate the hover state
+          if (e.features.length > 0) {
+            if (hoveredStateId !== null) {
+              map.setFeatureState(
+                {source: "composite", sourceLayer: a, id: hoveredStateId},
+                {hover:false}
+              );
+            }
+            hoveredStateId = e.features[0].id;
+            map.setFeatureState(
+              {source: "composite", sourceLayer: a, id: hoveredStateId},
+              {hover:true}
+            );
+          };
+
+          // define the layer properties
+          // with "e.features[0].properties," you have access to all of the properties from the initial geojson layer
+          let props = e.features[0].properties;
+
+          // get the popup defined above
+          popup
+            .setLngLat(e.lngLat) // the location of the cursor
+            .setHTML('<b>' + props.SITEADDR + '</b><br>City Block: ' + props.CITYBLOCK +
+              '<br>Legal: ' + props.LEGAL1 + '<br>Record Number: ' + props.CV_Book +
+              '<br>Year Restricted: ' + props.year) // feed the popup the prop info
+            .addTo(map) // add the popup to the map
+
+        });
+
+        // when you mouse off the layer...
+        map.on('mouseleave', a, () => {
+          // change the cursor style back to initial setting
+          map.getCanvas().style.cursor = '';
+          if (hoveredStateId !== null) {
+            map.setFeatureState(
+              { source: "composite", sourceLayer: a, id: hoveredStateId },
+              { hover: false }
+            );
+          }
+          hoveredStateId = null;
+
+          // and remove the popup
+          popup.remove();
+        });
+
+      };
+
+      // define incoming geojson files
+      const censusAll = d3.json('./data/stl_census.geojson');
+
+      // promise to wait until geojson files are loaded
+      Promise.all([censusAll]).then((data) => {
+
+        // define the data according to its order in object array
+        const pbAll = data[0];
+
+        // call functions below
+        addLayers(pbAll);
+
+      });
+
+    });
+
+    // add the layers to the map
+    function addLayers(pbAll) {
+
+      const stops = [[0.00, '#fafafa'],[0.10, '#c9c9c9'],[0.25, '#989898'],[0.50, '#676767'],[0.75, '#363636'],[0.90, '#050505']];
+      const paint = {"fill-color": {"property": "pb","stops": stops},"fill-opacity": 0.5,"fill-outline-color": {"property": "pb","stops": stops}};
+      const filter = ["all",['>=', ['number', ['get', 'year']], Math.floor(initYear/10)*10],['<=', ['number', ['get', 'year']], Math.floor(initYear/10)*10 + 9]];
+
+      // add the source to the map
+      map.addSource('pbAll', {
+        type: 'geojson',
+        data: pbAll // use our data as the data source
+      });
+      // add the GeoJSON data as a mapbox gl layer
+      map.addLayer({
+        'id': 'pbAll',
+        'type': 'fill',
+        'source': 'pbAll', // refers to source above
+        'layout': {'visibility': 'none'},
+        "paint": paint,
+        "filter": filter
+      });
+
+      // GROUPED LAYER TOGGLE
+      grouplayer = function () {
+
+        const subLayerIds = [ 'stl_county_sub', 'stl_city_sub' ];
+        const petLayerIds = [ 'stl_county_pet', 'stl_city_pet' ];
+        const parLayerIds = [ 'stl_county_par', 'stl_city_par' ];
+        const privLayerIds = [ 'stl_city_priv' ];
+        const privRLayerIds = [ 'stl_city_privR' ];
+
+        // parcel control
+        for (var index in parLayerIds) {
+          var clickedLayer = parLayerIds[index];
+          if (document.getElementById("parAllCB").checked) {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          }
+        };
+
+        // subdivision control
+        for (var index in subLayerIds) {
+          var clickedLayer = subLayerIds[index];
+          if (document.getElementById("subAllCB").checked) {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          }
+        };
+
+        // petition control
+        for (var index in petLayerIds) {
+          var clickedLayer = petLayerIds[index];
+          if (document.getElementById("petAllCB").checked) {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          }
+        };
+
+        // private streets control
+        for (var index in privLayerIds) {
+          var clickedLayer = privLayerIds[index];
+          if (document.getElementById("privAllCB").checked) {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          }
+        };
+
+        // private streets with restrictions control
+        for (var index in privRLayerIds) {
+          var clickedLayer = privRLayerIds[index];
+          if (document.getElementById("privRAllCB").checked) {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+          } else {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          }
+        };
+
+      };
+
+      // TOGGLE CENSUS DATA
+      switchlayer = function (lname) {
+        if (document.getElementById(lname + "CB").checked) {
+          map.setLayoutProperty(lname, 'visibility', 'visible');
+        } else {
+          map.setLayoutProperty(lname, 'visibility', 'none');
+        }
+      };
+
+      // change layer hierarchy so that the demographic data is below the parcel data
+      map.moveLayer('pbAll', 'stl_county_sub','stl_county_pet','stl_county_par','stl_city_sub','stl_city_pet','stl_city_par','stl_city_priv','stl_city_privR');
+
+      timeFilter(pbAll);
+
+    };
+
+    // filter the data with the time slider
+    function timeFilter(pbAll) {
+
+      // listen for a slider input
+      document.getElementById('slider').addEventListener('input', (event) => {
+
+        // define the newly-selected year
+        const year = parseInt(event.target.value);
+
+        // update text in the UI
+        document.getElementById('active-year').innerText = year;
+
+      });
+
+      // when there is a change in the time slider value
+      $('.session').on('change', (event) => {
+
+        // define the newly-selected year
+        const year = parseInt(event.target.value);
+
+        const sliderFilter = ["all",['>=', ['number', ['get', 'year']], Math.floor(year/10)*10],['<=', ['number', ['get', 'year']], Math.floor(year/10)*10 + 9]];
+
+        map.setFilter('pbAll', sliderFilter);
+
+        // wait until slider movement stops (prevents lagging with filtration)
+        Promise.resolve().then(_ => {
+
+          // update the map
+          map.setFilter('stl_county_sub', ['<=', ['number', ['get', 'RC_YR']], year]);
+          map.setFilter('stl_city_sub', ['<=', ['number', ['get', 'year']], year]);
+          map.setFilter('stl_county_pet', ['<=', ['number', ['get', 'RC_YR']], year]);
+          map.setFilter('stl_city_pet', ['<=', ['number', ['get', 'year']], year]);
+          map.setFilter('stl_county_par', ['<=', ['number', ['get', 'RC_YR']], year]);
+          map.setFilter('stl_city_par', ['<=', ['number', ['get', 'year']], year]);
+          map.setFilter('stl_city_priv', ['<=', ['number', ['get', 'year']], year]);
+          map.setFilter('stl_city_privR', ['<=', ['number', ['get', 'year']], year]);
+
+        });
+
+      });
+
+    };
+
+  </script>
+
+</body>
+
+</html>
