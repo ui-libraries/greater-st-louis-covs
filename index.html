@@ -323,11 +323,7 @@
     map.addControl(new maplibregl.NavigationControl());
 
     // add full screen control
-    const fsControl = new maplibregl.FullscreenControl({
-      source: document.getElementById('map').parentNode
-    });
-    
-    map.addControl(fsControl);
+    map.addControl(new maplibregl.FullscreenControl({container: document.querySelector('body')}));
 
     // add a scale bar
     map.addControl(new maplibregl.ScaleControl({
